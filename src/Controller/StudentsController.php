@@ -2,6 +2,9 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
+use \Exception;
+use \PDOException;
 
 /**
  * Students Controller
@@ -10,98 +13,69 @@ use App\Controller\AppController;
  *
  * @method \App\Model\Entity\Student[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
-class StudentsController extends AppController
-{
+class StudentsController extends AppController {
+    public function initialize() {
+        parent::initialize();
+        $this->Staffs = TableRegistry::get('staffs');
+        $this->Posts = TableRegistry::get('posts');
+        $this->viewBuilder()->autoLayout(true);
+        $this->viewBuilder()->layout('student');
+        $this->loadComponent('Flash');
+    }    
 
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
-    public function index()
-    {
-        $students = $this->paginate($this->Students);
+    public function index() {
+        // Staffsテーブルから現在の社員数(del_flg=0)を取得
+        $data = $this->Staffs->findByIsDeleted(0);
 
-        $this->set(compact('students'));
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Student id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $student = $this->Students->get($id, [
-            'contain' => ['Posts']
-        ]);
-
-        $this->set('student', $student);
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $student = $this->Students->newEntity();
-        if ($this->request->is('post')) {
-            $student = $this->Students->patchEntity($student, $this->request->getData());
-            if ($this->Students->save($student)) {
-                $this->Flash->success(__('The student has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The student could not be saved. Please, try again.'));
-        }
-        $this->set(compact('student'));
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Student id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $student = $this->Students->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $student = $this->Students->patchEntity($student, $this->request->getData());
-            if ($this->Students->save($student)) {
-                $this->Flash->success(__('The student has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The student could not be saved. Please, try again.'));
-        }
-        $this->set(compact('student'));
-    }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id Student id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $student = $this->Students->get($id);
-        if ($this->Students->delete($student)) {
-            $this->Flash->success(__('The student has been deleted.'));
-        } else {
-            $this->Flash->error(__('The student could not be deleted. Please, try again.'));
+        $list = array();
+        foreach ($data as $result) {
+            array_push($list, $result['id']);
         }
 
-        return $this->redirect(['action' => 'index']);
+        // 並び順で有利不利の無いようシャッフルする
+        shuffle($list);
+        $this->set('list', $list);
     }
+
+    public function vote() {
+        $person_no = $this->request->query('value');
+        $imgpath = $person_no. '.jpg';
+        $this->set('imgpath', $imgpath);
+        $this->set('person_no', $person_no);
+    }
+
+    public function addVoteRecord() {
+        $studentsRecord = $this->Students->newEntity();
+        $postsRecord = $this->Posts->newEntity();
+
+        $studentsRecord->name_initial = $this->request->data['f_name'].'・'.$this->request->data['l_name'];
+        $studentsRecord->univ = h($this->request->data['univ']);
+        $studentsRecord->ender = $this->request->data['gender'];
+
+        try {
+            $this->Students->save($studentsRecord);
+        } catch (PDOException $e) {
+            $this->Flash->error('登録できませんでした(table_s)'. $e->getMessage());
+            return $this->redirect(['action' => 'index']);
+        }
+
+        $postsRecord->student_id = $studentsRecord->id;
+        $postsRecord->staff_id = $this->request->data['person_no'];
+        $postsRecord->roc_x = $this->request->data['roc_x'];
+        $postsRecord->roc_y = $this->request->data['roc_y'];
+
+        try {
+            $this->Posts->save($postsRecord);
+        } catch (PDOException $e) {
+            $this->Flash->error('登録できませんでした(table_p)'. $e->getMessage());
+            return $this->redirect(['action' => 'index']);
+        }
+
+        return $this->redirect(['action' => 'complete']);
+    }
+
+    public function complete() {
+
+    }
+
 }
