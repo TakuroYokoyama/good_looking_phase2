@@ -1,0 +1,146 @@
+/*
+全体設定
+*/
+
+body {
+	margin: 10px 0px;
+}
+
+#header {
+	font-size: 18pt;
+	font-weight: bold;
+	margin: 10px;
+}
+
+#content p {
+	color: orange;
+	font-size: 14pt;
+}
+
+#footer {
+	text-align: right;
+	font-size: 12pt;
+	margin: 10pt;
+}
+
+h1 {
+	color: #aaa;
+	font-size: 24pt;
+	margin: 20pt 0pt 50pt 0pt;
+}
+
+.wrapper {
+	width: 1140px;
+	margin: auto;
+}
+
+button {
+	margin-top :20px;
+}
+
+/* cake.cssよりFlash errorのスタイルを借用 */
+div.message {
+    text-align: center;
+    cursor: pointer;
+    display: block;
+    font-weight: normal;
+    padding: 0 1.5rem 0 1.5rem;
+    transition: height 300ms ease-out 0s;
+    background-color: #a0d3e8;
+    color: #626262;
+    top: 15px;
+    right: 15px;
+    z-index: 999;
+    overflow: hidden;
+    height: 50px;
+    line-height: 2.5em;
+    box-radius: 5px;
+}
+
+div.message:before {
+    line-height: 0px;
+    font-size: 20px;
+    height: 12px;
+    width: 12px;
+    border-radius: 15px;
+    text-align: center;
+    vertical-align: middle;
+    display: inline-block;
+    position: relative;
+    left: -11px;
+    background-color: #FFF;
+    padding: 12px 14px 12px 10px;
+    content: "i";
+    color: #a0d3e8;
+}
+
+div.message.error {
+    background-color: #C3232D;
+    color: #FFF;
+}
+
+div.message.error:before {
+    padding: 11px 16px 14px 7px;
+    color: #C3232D;
+    content: "x";
+}
+
+div.message.hidden {
+    height: 0;
+}
+
+/*
+index.ctp
+一覧ページ
+*/
+
+.index_img img{
+	width: 100px;
+	height: 160px;
+	margin: 10px 10px;
+}
+
+/*
+vote.ctp
+投票ページ
+*/
+
+.vote_img {
+	padding: 40px;
+	margin: auto;
+	width: 380px;
+	height: 560px;
+}
+
+#target {
+	margin: auto;
+}
+
+/*
+complete.ctp
+完了ページ
+*/
+
+.thanks {
+	color: orange;
+	text-align: center;
+	margin: auto;
+}
+
+.complete {
+	margin: auto;
+	height: 1000px;
+}
+
+.vote_img {
+	background-image: url("/img/frame.jpg");
+	background-size: cover;
+	padding: 40px;
+	margin: auto;
+	width: 380px;
+	height: 560px;
+}
+
+#target {
+	margin: auto;
+}
