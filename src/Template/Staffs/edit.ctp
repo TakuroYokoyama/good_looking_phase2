@@ -1,35 +1,26 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Staff $staff
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Form->postLink(
-                __('Delete'),
-                ['action' => 'delete', $staff->id],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $staff->id)]
-            )
-        ?></li>
-        <li><?= $this->Html->link(__('List Staffs'), ['action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('List Posts'), ['controller' => 'Posts', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Post'), ['controller' => 'Posts', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="staffs form large-9 medium-8 columns content">
-    <?= $this->Form->create($staff) ?>
-    <fieldset>
-        <legend><?= __('Edit Staff') ?></legend>
-        <?php
-            echo $this->Form->control('name');
-            echo $this->Form->control('img_path');
-            echo $this->Form->control('created_date');
-            echo $this->Form->control('updated_date');
-            echo $this->Form->control('is_deleted');
-        ?>
-    </fieldset>
-    <?= $this->Form->button(__('Submit')) ?>
-    <?= $this->Form->end() ?>
-</div>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<link href="/css/bootstrap.min.css" rel="stylesheet">
+<link href="/css/nomalize.css" rel="stylesheet">
+<title>管理画面：編集</title>
+</head>
+<body>
+    <?= $this->Form->create('edit', ['enctype' => 'multipart/form-data', 'type' => 'file', 'url' => ['action' => 'updateStaff']]); ?>
+    <div id="editArea">
+        <div>
+            <img src=/<?= $staffData->img_path ?> width='180px' height='240px'>
+        </div>
+        <div>
+            <?= $this->Form->file('UploadData') ?>
+            <p>社員番号:<?= $staffData->id ?></p>
+            <?= $this->Form->input("name",["type"=>"text", "label"=>"社員名：", "default" => $staffData->name]); ?>
+        </div>
+        <?=$this->Form->create('',['url'=>['action'=>'regist']]) ?>
+        <?=$this->Form->button('登録', array('class'=>'btn btn-danger center-block')) ?>
+    </div>
+    <?=$this->Form->end() ?>
+</body>
+</html>
